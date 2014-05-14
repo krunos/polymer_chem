@@ -1,6 +1,6 @@
-I'm not responsible for computers crapping on the end user up as a result of my code.
+I'm not responsible for computers crapping up on the end user as a result of my code.
 
-The code is provided as is, and there is no guarantee that I will fix bugs.
+The code is provided as is, and there is no guarantee that I will fix any bugs.
 
 Suggestions on improving my code are always welcome.
 
