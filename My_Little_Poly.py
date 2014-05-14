@@ -104,9 +104,11 @@ for counter in np.arange(m1):# This is the for loop which gives the repetitions.
 # coordinates in the software of their choice.
     text_file.write('\nMean bond length = '+str(v_list.mean())+' Angströms\n\n')
     text_file.write('Bond length standard deviation = '+str(v_list.std())+' Angströms\n\n')
-    text_file.write('Distance between the first and last carbon atoms = '+str(np.linalg.norm(np.array([p[n-4,0]-p[1,0],p[n-4,1]-p[1,1],p[n-4,2]+p[1,2]]))))
+    gyr_rad = np.linalg.norm(np.array([p[n-4,0]-p[1,0],p[n-4,1]-p[1,1],p[n-4,2]+p[1,2]]))# Gyroscopic radius.
+# Distance between the first and last carbon carbon atoms in a polymer.
 # I have no idea why the last carbon atom corresponds to the n-4 index.
-    dist_ar = np.append(dist_ar,np.linalg.norm(np.array([p[n-4,0]-p[1,0],p[n-4,1]-p[1,1],p[n-4,2]+p[1,2]])))
+    text_file.write('Gyroscopic radius = '+str(gyr_rad))
+    dist_ar = np.append(dist_ar,gyr_rad)
 # This adds the distance between the first and last carbons in each repetion to an array
     text_file.close()# Closes the text file with the coordinates.
     fig = plt.figure(figsize=(15,15))# Creates a figure that is 15in x 15in in size.
