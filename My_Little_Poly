@@ -1,0 +1,17 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.axes3d import Axes3D
+close('all')# Depending on your developing environment you may or may not need this. I use it because it closes all figures.
+
+params = {'backend': 'ps',
+          'axes.labelsize': 20,
+          'axes.titlesize': 20,
+          'text.fontsize': 20,
+          'legend.fontsize': 20,
+          'xtick.labelsize': 10,
+          'ytick.labelsize': 10,
+          'ztick.labelsize': 10,
+          'text.usetex': True,
+          'font.family': 'serif',
+          'mathtext.fontset': 'custom'}
+matplotlib.rcParams.update(params)# I also use LaTeX installed, so my graph parameters include LaTeX typesetting. If you don't use LaTeX yourself, you should, but if you really don't want to you need to take out the setting which gives graphs LaTeX typesetting.
