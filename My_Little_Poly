@@ -98,7 +98,7 @@ for counter in np.arange(m1):# This is the for loop which gives the repetitions.
             y=r*np.sin(phi)*np.sin((b*109.5)/180*np.pi)# Creates the first point on y.
             z=r*np.cos(phi)# Creates the first point on z.
             p1=np.array([x,y,z])# Makes a vector from these coordinates.
-            p=np.vstack((p,p1))# Adds this vector a row at the bottom of the coordinate matrix.
+            p=np.vstack((p,p1))# Adds this vector as a row at the bottom of the coordinate matrix.
             text_file.write(str('{0}'.format(' '.join(str(i) for i in p[i,:])+'\n')))
 #           Writes each coordinate, separated by a space, onto the text file. This allows the user to plot the
 #           coordinates in the software of their choice.
