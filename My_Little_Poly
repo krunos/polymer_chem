@@ -1,8 +1,10 @@
+# This is a simulation of a solvated polyethelene visualisation. It's still an on-going thing.
+# I need to restrict the angles to real values. All my attempts up until now have failed.
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.axes3d import Axes3D
-close('all')# Depending on your developing environment you may or may not need this. I use it because it closes all figures.
-
+close('all')# Depending on your developing environment you may or may not need this. 
+#             I use it because it closes all figures.
 params = {'backend': 'ps',
           'axes.labelsize': 20,
           'axes.titlesize': 20,
@@ -14,4 +16,106 @@ params = {'backend': 'ps',
           'text.usetex': True,
           'font.family': 'serif',
           'mathtext.fontset': 'custom'}
-matplotlib.rcParams.update(params)# I also use LaTeX installed, so my graph parameters include LaTeX typesetting. If you don't use LaTeX yourself, you should, but if you really don't want to you need to take out the setting which gives graphs LaTeX typesetting.
+matplotlib.rcParams.update(params)# I also use LaTeX installed, so my graph parameters 
+#                                   include LaTeX typesetting. If you don't use LaTeX yourself,
+#                                   you should, but if you really don't want to, you need to
+#                                   take out the setting which gives graphs LaTeX typesetting (last 3 lines).
+m = int(input("Number of monomers = "))# Asks an integer (no fractional atoms) input and saves it onto m.
+m1 = int(input("Number of repetitions = "))# This is because my friends needed to calculate the mean distance
+#                                            between the first and last carbon atoms of a given number of polymers.
+dist_ar = np.array([])# This is the distances array with which mean distance and std dev will be calculated.
+for counter in np.arange(m1):# This is the for loop which gives the repetitions.
+    n = m# Things went to hell if I didn't change variables. I still don't know why.
+    r = float()# It's the bond length. I know I don't have to, but I like defining things.
+    b = int(0)# This is the C-C-C angle counter. It's there so the bonds have the required angle between them.
+#               It works well when you take out all randomness, but if you do that then all you get is an upward spiral.
+    x, y, z = float(), float(), float()# These are the x,y,z coordiantes.
+    p = np.ndarray((1,3),int)# ndarray because it needs to be able to morph into an nx3 matrix.
+    p[:,:] = int(0)# This is the first coordinate, however, it doesn't figure in the plot or generated .txt files.
+#                    The reason for this is that it doesn't preserve the angle it needs to have, but it's required
+#                    for the definition of vectors.
+    i = int()# This is the counter for the cycle which builds the polymer.
+    v_list = np.array([])# La lista de longitudes de enlace, su dimensión es n-1. Donde n = número de puntos.
+    text_file=open('puntos'+str(counter+1)+'.txt',"w")# Crea un archivo .txt llamado puntos.
+    text_file.write('Número de carbonos = '+str(n)+'\n\n')# Da en número de carbonos en el polímero y da dos enter.
+    text_file.write('x  y   z\n\n')# Escribe el órden de las coordenadas.
+    for i in np.arange(1,2*n+1):# El ciclo empieza en i = 1 y termina en i = n. En realidad hace n-1 ciclos porque la primera coordenada ya está definida como (0,0,0).
+        if np.random.randint(0,2)==1:# Esto es lo que va dando el ángulo entre carbonos. La naturaleza aleatoria de esto hace que no se cumpla bien
+#                                      el requerimiento de los ángulos. Pueden hacer que b solo vaya aumentando o disminuyendo, ahí se cumple mejor la restricción.
+            b = b + 1
+        else:
+            b = b - 1
+        phi = np.random.uniform(0,np.pi)# Este es el ángulo de crecimiento. Esto se relaciona con la cinética de solución.
+        r = 0.001*np.random.randn() + 1.59# Es la longitud de enlace.
+        if i>1:
+            xi = p[i-1,0]# Es el punto x anterior, se necesita para desplazar al coordenada al lugar donde se necesita.
+            yi = p[i-1,1]# Es el punto y anterior, se necesita para desplazar al coordenada al lugar donde se necesita.
+            zi = p[i-1,2]# Es el punto z anterior, se necesita para desplazar al coordenada al lugar donde se necesita.
+            ux = p[i-1,0] - p[i-2,0]# Es la componente x del vector de enlace.
+            uy = p[i-1,1] - p[i-2,1]# Es la componente y del vector de enlace.
+            uz = p[i-1,2] - p[i-2,2]# Es la componente z del vector de enlace.
+            if np.random.randint(0,2)==1:# Este define el ángulo dihedral. El hecho que sea aleatorio hace que no se cumpla siempre. Pero lo pueden definir como un
+#                                          ángulo estático o uno con distribución normal, así como r. Cuando esto es así, y b solo aumenta o disminuye, se cumple
+#                                          la restricción de los ángulos, pero el polímero se vuelve quiral.
+                theta = np.random.randn() + np.pi/6
+            else:
+                theta = np.random.randn() - np.pi/6
+            n = np.linalg.norm(np.array([ux,uy,uz]))**2# Es la norma cuadrada del vector de enlace. Se necesita para normalizar la matriz de rotación.
+#                                                        Si quieren saber bien porque metan álgebra lineal, esta bien chida.
+            N = np.linalg.norm(np.array([ux,uy,uz]))# Es la norma del vector de enlace. Se necesita para normalizar la matriz de rotación.
+#                                                     Si quieren saber bien porque metan álgebra lineal, esta bien chida.
+            r_vec = np.array([ux,uy,uz])/N# Es el vector unitario de enlace, no se usa en el programa pero aquí está en caso que se requiera usar. 
+#                                           Es el vector alrededor del cual se rotan las coordenadas, dando el ángulo dihedral.
+            C = np.cos(theta)# Uno de los términos de la matriz de rotación.
+            S = np.sin(theta)# Uno de los términos de la matriz de rotación.
+            t = 1 - np.cos(theta)# Uno de los términos de la matriz de rotación.
+            R = np.array([
+            [t*ux**2/n+C,t*ux*uy/n-S*uz/N,t*ux*uz/n+S*uy/N],# Matriz de rotación alrededor de un vector arbirtrario, ya está normalizada.
+            [t*ux*uy/n+S*uz/N,t*uy**2/n+C,t*uy*uz/n-S*ux/N],
+            [t*ux*uz/n-S*uy/N,t*uy*uz/n+S*ux/N,t*uz**2/n+C]
+                          ])
+            x=r*np.sin(phi)*np.cos((b*109.5)/180*np.pi)# El componente x del vector de crecimiento. El vector inicia en el origen, de otra manera la rotación no sale.
+            y=r*np.sin(phi)*np.sin((b*109.5)/180*np.pi)# El componente y del vector de crecimiento. El vector inicia en el origen, de otra manera la rotación no sale.
+            z=r*np.cos(phi)# El componente z del vector de crecimiento. El vector inicia en el origen, de otra manera la rotación no sale.
+            v = np.array([x,y,z])# Pongo las coordenadas en un vector.
+            v = np.dot(R,v)# Hace la multiplicación de matriz que rota el vector de coordenadas. Es una transformación lineal y normalizada. 
+#                            Se preserva la magnitud del vector rotado.
+            p1=np.array([v[0]+xi,v[1]+yi,v[2]+zi])# A las coordenadas rotadas les sumo las coordenadas del punto anterior para transladarlas al lugar donde deben ir.
+#                                                   Los nuevos puntos se ponen en otro vector.
+            p=np.vstack((p,p1))# El vector se stackea verticalmente en la matriz con las demás coordenadas. El vector nuevo se pone hasta abajo.
+#                                En otras palabras, el vector se agrega como renglón a la matríz de coordenadas.
+            text_file.write(str('{0}'.format(' '.join(str(i) for i in p[i,:])+'\n')))# Se escribe el vector con cada componente separado por un espacio en el
+#                                                                                      archivo de texto. Así se puede cargar el archivo al graficador de su
+#                                                                                      elección y graficar sin problemas.
+            v_list = np.append(v_list,np.linalg.norm(v))# Agrega la norma del vector de crecimiento (longitud de enlace) a una lista.
+        else:
+            x=r*np.sin(phi)*np.cos((b*109.5)/180*np.pi)+x# El componente x del vector de crecimiento. En este caso se le agrega x nadamás así, porque las coordenadas
+#                                                          iniciales son 0
+            y=r*np.sin(phi)*np.sin((b*109.5)/180*np.pi)+y# El componente y del vector de crecimiento. En este caso se le agrega x nadamás así, porque las coordenadas
+#                                                          iniciales son 0
+            z=r*np.cos(phi)+z# El componente z del vector de crecimiento. En este caso se le agrega x nadamás así, porque las coordenadas
+#                              iniciales son 0
+            p1=np.array([x,y,z])# Pongo las coordenadas en un vector.
+            v_list = np.linalg.norm(p1)# Agrega la norma del vector de crecimiento (longitud de enlace) a una lista.
+            p=np.vstack((p,p1))# El vector se stackea verticalmente en la matriz con las demás coordenadas. El vector nuevo se pone hasta abajo.
+#                                En otras palabras, el vector se agrega como renglón a la matríz de coordenadas.
+            text_file.write(str('{0}'.format(' '.join(str(i) for i in p[i,:])+'\n')))# Se escribe el vector con cada componente separado por un espacio en el
+#                                                                                      archivo de texto. Así se puede cargar el archivo al graficador de su
+#                                                                                      elección y graficar sin problemas.
+    text_file.write('\nLongitud de enlace promedio = '+str(v_list[1:].mean())+' Angströms\n\n')# Escribe la longitud de enlace promedio.
+#                                                                                                La lista empieza con el segundo término porque las primaras
+#                                                                                                coordenadas (0,0,0) no se toman en cuenta.
+    text_file.write('Desviación estándar de longitud de enlace = '+str(v_list[1:].std())+' Angströms\n\n')# Escribe la desviación estándar de enlace.
+#                                                                                                La lista empieza con el segundo término porque las primaras
+#                                                                                                coordenadas (0,0,0) no se toman en cuenta.
+    text_file.write('Distancia entre primer y último carbono = '+str(np.linalg.norm(np.array([p[n-4,0]-p[1,0],p[n-4,1]-p[1,1],p[n-4,2]+p[1,2]]))))
+#   Saca la distancia entre el primer y último carbonos. El último es n-4 por la magia de la programación.
+    text_file.close()# Cierra el archivo de texto para salvar los cambios.
+    fig = plt.figure(figsize=(15,15))# Crea una figura con tamaño de 15x15 in.
+    ax = fig.add_subplot(1, 1, 1, projection='3d')# Llama al módulo de gráficas en 3D.
+    ax.plot(p[1:,0],p[1:,1],p[1:,2], '-', label=r'Pol\'{i}mero')# Grafica con líneas. El color default es azul. Pone la leyenda para que diga Polímero.
+    ax.legend(loc=0)# Decide el mejor lugar para poner la leyenda. Cambia dinámicamente.
+    ax.set_xlabel(r'X')# Nombre del eje x.
+    ax.set_ylabel(r'Y')# Nombre del eje y.
+    ax.set_zlabel(r'Z')# Nombre del eje z.
+    ax.set_aspect(1)
