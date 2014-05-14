@@ -112,7 +112,7 @@ for counter in np.arange(m1):# This is the for loop which gives the repetitions.
     fig = plt.figure(figsize=(15,15))# Creates a figure that is 15in x 15in in size.
     ax = fig.add_subplot(1, 1, 1, projection='3d')# Creates a 3d subplot.
     ax.plot(p[1:,0],p[1:,1],p[1:,2], '-', label=r'Polymer')# Plots every point.
-    ax.legend(loc=0)# Dynamically decides the best place for a label is.
+    ax.legend(loc=0)# Dynamically decides the best place for a label.
     ax.set_xlabel(r'X')# x-axis name.
     ax.set_ylabel(r'Y')# y-axis name.
     ax.set_zlabel(r'Z')# z-axis name.
