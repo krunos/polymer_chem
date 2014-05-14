@@ -16,7 +16,7 @@ params = {'backend': 'ps',
           'text.usetex': True,
           'font.family': 'serif',
           'mathtext.fontset': 'custom'}
-matplotlib.rcParams.update(params)# I also use LaTeX installed, so my graph parameters 
+matplotlib.rcParams.update(params)# I also LaTeX installed, so my graph parameters 
 #                                   include LaTeX typesetting. If you don't use LaTeX yourself,
 #                                   you should, but if you really don't want to, you need to
 #                                   take out the setting which gives graphs LaTeX typesetting (last 3 lines).
